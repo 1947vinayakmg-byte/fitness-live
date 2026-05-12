@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
-import { Apple, Flame, Dumbbell } from 'lucide-react';
+import { Apple, Flame, Dumbbell, Calculator } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 export default function DietPlan() {
   const plans = [
@@ -58,13 +59,18 @@ export default function DietPlan() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Header */}
-        <div className="text-center mb-16">
+        <div className="text-center mb-16 relative">
+          <div className="absolute inset-0 flex items-center justify-center -z-10">
+            <span className="text-8xl md:text-9xl font-heading font-black text-outline opacity-10 uppercase tracking-tighter select-none pointer-events-none">
+              FUEL
+            </span>
+          </div>
           <motion.h1 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="text-4xl md:text-6xl font-heading font-bold text-zinc-900 dark:text-white uppercase tracking-tight mb-4"
           >
-            Nutrition & <span className="text-yellow-500">Diet Plans</span>
+            Nutrition & <span className="text-gradient">Diet Plans</span>
           </motion.h1>
           <motion.div 
             initial={{ opacity: 0, scale: 0.8 }}
@@ -72,9 +78,22 @@ export default function DietPlan() {
             transition={{ delay: 0.2 }}
             className="w-24 h-1 bg-red-600 mx-auto mb-6"
           />
-          <p className="text-xl text-zinc-600 dark:text-zinc-400 max-w-2xl mx-auto">
+          <p className="text-xl text-zinc-600 dark:text-zinc-400 max-w-2xl mx-auto mb-8">
             Training is only half the battle. Fuel your body with the right nutrients to achieve your specific goals.
           </p>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+          >
+            <Link 
+              to="/bmi" 
+              className="inline-flex items-center gap-2 bg-yellow-500 hover:bg-yellow-600 text-zinc-900 px-8 py-4 rounded-full font-bold text-lg transition-all shadow-[0_0_15px_rgba(234,179,8,0.5)] hover:scale-105"
+            >
+              <Calculator className="w-6 h-6" />
+              Check Your BMI
+            </Link>
+          </motion.div>
         </div>
 
         {/* Diet Plans Grid */}

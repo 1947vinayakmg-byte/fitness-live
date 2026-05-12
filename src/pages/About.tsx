@@ -11,19 +11,24 @@ export default function About() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Header */}
-        <div className="text-center mb-16">
+        <div className="text-center mb-16 relative">
+          <div className="absolute inset-0 flex items-center justify-center -z-10">
+            <span className="text-8xl md:text-9xl font-heading font-black text-outline opacity-10 uppercase tracking-tighter select-none pointer-events-none">
+              LEGACY
+            </span>
+          </div>
           <motion.h1 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="text-4xl md:text-6xl font-heading font-bold text-zinc-900 dark:text-white uppercase tracking-tight mb-4"
           >
-            About <span className="text-red-600">Us</span>
+            About <span className="text-gradient">Us</span>
           </motion.h1>
           <motion.div 
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.2 }}
-            className="w-24 h-1 bg-yellow-500 mx-auto"
+            className="w-24 h-1 bg-red-600 mx-auto"
           />
         </div>
 
@@ -90,9 +95,14 @@ export default function About() {
         </div>
 
         {/* Trainers Section */}
-        <div>
+        <div className="relative">
+          <div className="absolute -top-12 left-0 right-0 flex justify-center -z-10">
+             <span className="text-7xl md:text-8xl font-heading font-black text-outline opacity-5 uppercase tracking-tighter select-none pointer-events-none">
+              EXPERTS
+            </span>
+          </div>
           <h2 className="text-3xl md:text-5xl font-heading font-bold text-center text-zinc-900 dark:text-white mb-12">
-            Meet Our <span className="text-yellow-500">Trainers</span>
+            Meet Our <span className="text-gradient">Trainers</span>
           </h2>
           
           <div className="flex flex-wrap justify-center gap-8 max-w-5xl mx-auto"> 

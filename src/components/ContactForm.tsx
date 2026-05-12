@@ -1,6 +1,8 @@
 import React, { useState, useRef } from 'react';
 import { CreditCard, Phone, Calendar, User, Activity, AlertCircle, MapPin, Mail, Dumbbell, Clock, Users } from 'lucide-react';
 import CongratulationsPage from './CongratulationsPage';
+import { auth, db } from '../firebase';
+import { doc, updateDoc } from 'firebase/firestore';
 
 const ContactForm = () => {
   const [paymentMode, setPaymentMode] = useState('cash');
@@ -69,6 +71,20 @@ const ContactForm = () => {
   setIsSubmitted(true);
 
   try {
+    // Update membership plan in Firestore if user is logged in
+    const user = auth.currentUser;
+    if (user && formData.membershipType) {
+      const planName = formData.membershipType === '1500' ? 'Silver' : 
+                       formData.membershipType === '3000' ? 'Gold' : 
+                       formData.membershipType === '5000' ? 'Platinum' : 
+                       formData.membershipType === '9000' ? 'Diamond' : 
+                       formData.membershipType === '1200' ? 'Couple' : 'None';
+      
+      updateDoc(doc(db, 'users', user.uid), {
+        membershipPlan: planName
+      }).catch(err => console.error("Firestore update error:", err));
+    }
+
     // PASTE YOUR NEW GOOGLE DEPLOYMENT URL HERE
     const scriptURL = "https://script.google.com/macros/s/AKfycbzgZit9MmMUyQqupWMYdMMmLFU-R1tdXVh_DaaLH1DPASdWMP0e7NoIv54zuesikNTo/exec"; 
     

@@ -5,11 +5,17 @@ import Hero from '../assets/my-workout.jpg';
 import Transformations from '../assets/before-after1.jpg';
 import Transform2 from '../assets/before-after2.jpg';
 import Transform3 from '../assets/before-after3.jpg';
-export default function Home() {
+import { useEffect, useState } from 'react';
+import { auth } from '../firebase';
+import { onAuthStateChanged, User } from 'firebase/auth';
+
+export default function Home({ user }: { user: any }) {
+  // Remove internal user state and useEffect since user is now a prop
+
   return (
     <div className="w-full">
       {/* Hero Section */}
-      <section className="relative h-[90vh] flex items-center justify-center overflow-hidden bg-zinc-950">
+      <section className="relative min-h-[95vh] flex items-center justify-center overflow-hidden bg-zinc-950 pt-20">
         <div className="absolute inset-0 z-0 opacity-40">
           <img 
             src={Hero} 
@@ -19,28 +25,46 @@ export default function Home() {
           />
           <div className="absolute inset-0 bg-linear-to-t from-zinc-950 via-zinc-950/60 to-transparent" />
         </div>
+
+        {/* Aesthetic Background Text */}
+        <div className="absolute inset-0 z-0 flex items-center justify-center overflow-hidden pointer-events-none">
+          <span className="text-[20vw] font-heading font-black text-outline opacity-10 uppercase tracking-tighter select-none">
+            STRENGTH
+          </span>
+        </div>
         
-        <div className="relative z-10 text-center px-4 max-w-5xl mx-auto">
+        <div className="relative z-10 text-center px-4 max-w-6xl mx-auto py-20">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <h1 className="font-heading font-bold text-5xl md:text-7xl lg:text-8xl text-white uppercase tracking-tight mb-4">
-              Build Your <span className="text-yellow-500">Empire.</span><br />
+            <div className="inline-block mb-6 px-4 py-1.5 rounded-full border border-red-500/30 bg-red-500/10 text-red-500 text-xs md:text-sm font-bold uppercase tracking-[0.2em] animate-pulse">
+              The Ultimate Fitness Destination
+            </div>
+            <h1 className="font-heading font-bold text-5xl md:text-8xl lg:text-9xl text-white uppercase tracking-tighter mb-8 leading-[0.9]">
+              Build Your <span className="text-gradient">Empire.</span><br />
               Train Like a <span className="text-red-600">Champion.</span>
             </h1>
-            <p className="text-xl md:text-2xl text-zinc-300 font-medium mb-8 max-w-3xl mx-auto">
-              Fitness City – Where Strength Meets Style
+            <p className="text-xl md:text-3xl text-zinc-400 font-medium mb-12 max-w-3xl mx-auto">
+              Fitness City <span className="text-zinc-600 mx-2">|</span> Where Strength Meets Style
             </p>
             
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
               <Link 
-              to="/contact"
-              className="bg-red-600 hover:bg-red-700 text-white px-8 py-4 rounded-full font-bold text-lg transition-colors flex items-center justify-center gap-2"
-            >
-              Join Now
-            </Link>
+                to={user ? "/profile" : "/contact"}
+                className="bg-red-600 hover:bg-red-700 text-white px-8 py-4 rounded-full font-bold text-lg transition-colors flex items-center justify-center gap-2 min-w-[200px]"
+              >
+                {user ? "Go to Profile" : "Join Now"}
+              </Link>
+              {!user && (
+                <Link 
+                  to="/login"
+                  className="bg-white/10 backdrop-blur-md border-2 border-white/20 text-white hover:bg-white/20 px-8 py-4 rounded-full font-bold text-lg transition-all flex items-center justify-center gap-2 min-w-[200px]"
+                >
+                  Login / Signup
+                </Link>
+              )}
               <a 
                 href="tel:9964290488" 
                 className="w-full sm:w-auto bg-transparent border-2 border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-zinc-950 px-8 py-4 rounded-full font-bold text-lg transition-all flex items-center justify-center gap-2"
@@ -58,14 +82,14 @@ export default function Home() {
       </section>
 
       {/* Quick Stats / Features */}
-      <section className="py-12 bg-white dark:bg-zinc-900 border-y border-zinc-200 dark:border-red-900/30">
+      <section className="py-16 bg-zinc-100 dark:bg-zinc-950 relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {[
-              { icon: Star, label: "Google Rating", value: "4.7/5", color: "text-yellow-500" },
-              { icon: Users, label: "Active Members", value: "50+", color: "text-red-500" },
-              { icon: Dumbbell, label: "Equipment", value: "Premium", color: "text-pink-500" },
-              { icon: Activity, label: "Personal Training", value: "Available", color: "text-green-500" },
+              { icon: Star, label: "Google Rating", value: "4.7/5", color: "text-yellow-500", bg: "bg-yellow-500/10" },
+              { icon: Users, label: "Active Members", value: "500+", color: "text-red-500", bg: "bg-red-500/10" },
+              { icon: Dumbbell, label: "Equipment", value: "Premium", color: "text-blue-500", bg: "bg-blue-500/10" },
+              { icon: Activity, label: "Expert Training", value: "Available", color: "text-green-500", bg: "bg-green-500/10" },
             ].map((stat, i) => (
               <motion.div 
                 key={i}
@@ -73,11 +97,13 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
-                className="flex flex-col items-center"
+                className="bg-white dark:bg-zinc-900 p-8 rounded-3xl shadow-lg border border-zinc-200 dark:border-zinc-800 flex flex-col items-center text-center group hover:border-red-600 transition-colors"
               >
-                <stat.icon className={`w-8 h-8 ${stat.color} mb-3`} />
-                <h3 className="text-3xl font-heading font-bold text-zinc-900 dark:text-white mb-1">{stat.value}</h3>
-                <p className="text-sm text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">{stat.label}</p>
+                <div className={`p-4 rounded-2xl ${stat.bg} ${stat.color} mb-6 group-hover:scale-110 transition-transform`}>
+                  <stat.icon className="w-8 h-8" />
+                </div>
+                <h3 className="text-3xl md:text-4xl font-heading font-black text-zinc-900 dark:text-white mb-2">{stat.value}</h3>
+                <p className="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-[0.2em]">{stat.label}</p>
               </motion.div>
             ))}
           </div>
@@ -85,68 +111,50 @@ export default function Home() {
       </section>
 
       {/* Membership Teaser */}
-      <section className="py-20 bg-zinc-50 dark:bg-zinc-950">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-5xl md:text-7xl font-heading font-bold text-zinc-900 dark:text-white mb-6">
-            Start Your Journey Today
-          </h2>
-          <p className=" text-2xl text-zinc-600 dark:text-zinc-400 mb-8 max-w-2xl mx-auto">
-            Experience premium equipment, expert trainers, and a community that pushes you to be your best.
-          </p>
-          <div className="flex flex-wrap justify-center gap-4">
-          <div className="inline-block bg-purple-500 text-zinc-950 px-8 py-6 rounded-2xl shadow-xl transform -rotate-2 hover:rotate-0 transition-transform duration-300">
-            <p className="text-lg font-medium uppercase tracking-wider mb-2">Memberships Starting From</p>
-            <p className="text-5xl font-heading font-bold mb-4">₹1500
-              <span className="md:text-2xl font-heading font-bold text-2xl text-zinc-800">/1 month</span></p>
-            <Link 
-            to="/contact"
-            className="mt-4 inline-block bg-zinc-950 text-yellow-500 py-2 px-6 rounded-full font-bold text-sm cursor-pointer hover:scale-105 transition-transform"
->
-             Book Now
-</Link>
-            </div>
+      <section className="py-24 bg-zinc-50 dark:bg-zinc-950 relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-full bg-grid opacity-10 pointer-events-none" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-7xl font-heading font-bold text-zinc-900 dark:text-white mb-6 uppercase tracking-tighter">
+              Choose Your <span className="text-gradient">Empire</span>
+            </h2>
+            <p className="text-xl md:text-2xl text-zinc-600 dark:text-zinc-400 max-w-3xl mx-auto font-medium">
+              Experience premium equipment, expert trainers, and a community that pushes you to be your best.
+            </p>
+          </div>
           
-            <div className="inline-block bg-red-500 text-zinc-950 px-8 py-6 rounded-2xl shadow-xl transform -rotate-2 hover:rotate-0 transition-transform duration-300">
-            <p className="text-lg font-medium uppercase tracking-wider mb-2">Memberships Starting From</p>
-            <p className="text-5xl font-heading font-bold mb-4">₹3500<span className="text-2xl text-zinc-800">/3 month</span></p>
-            <Link 
-            to="/contact"
-            className="mt-4 inline-block bg-zinc-950 text-yellow-500 py-2 px-6 rounded-full font-bold text-sm cursor-pointer hover:scale-105 transition-transform"
->
-             Book Now
-            </Link></div>
-            <div className="inline-block bg-green-500 text-zinc-950 px-8 py-6 rounded-2xl shadow-xl transform -rotate-2 hover:rotate-0 transition-transform duration-300">
-            <p className="text-lg font-medium uppercase tracking-wider mb-2">Memberships Starting From</p>
-            <p className="text-5xl font-heading font-bold mb-4">₹5000</p>
-              <p><span className="md:text-2xl font-heading font-bold text-2xl text-zinc-800">/6 month</span></p>
-            <Link 
-            to="/contact"
-            className="mt-4 inline-block bg-zinc-950 text-yellow-500 py-2 px-6 rounded-full font-bold text-sm cursor-pointer hover:scale-105 transition-transform"
->
-             Book Now
-            </Link></div>
-            <div className="inline-block bg-yellow-500 text-zinc-950 px-5 py-4 rounded-2xl shadow-xl transform -rotate-2 hover:rotate-0 transition-transform duration-300">
-            <p className="text-lg font-medium uppercase tracking-wider mb-2">Memberships Starting From</p>
-            <p className="text-5xl font-heading font-bold mb-4">₹9000</p>
-              <p><span className="md:text-2xl font-heading font-bold text-2xl text-zinc-800">/12 month</span></p>
-            <Link 
-            to="/contact"
-            className="mt-4 inline-block bg-zinc-950 text-yellow-500 py-2 px-6 rounded-full font-bold text-sm cursor-pointer hover:scale-105 transition-transform"
->
-             Book Now
-</Link></div>
-            <div className="inline-block bg-pink-400 text-zinc-950 px-5 py-4 rounded-2xl shadow-xl transform -rotate-2 hover:rotate-0 transition-transform duration-300">
-            <p className="text-lg font-medium uppercase tracking-wider mb-2">Memberships Starting From</p>
-            <p className="text-5xl font-heading font-bold mb-4">₹12000</p>
-              <p><span className="md:text-2xl font-heading font-bold text-2xl text-zinc-800">/12 month for couple</span></p>
-            
-            <Link 
-            to="/contact"
-            className="mt-4 inline-block bg-zinc-950 text-yellow-500 py-2 px-6 rounded-full font-bold text-sm cursor-pointer hover:scale-105 transition-transform"
->
-             Book Now
-              </Link>
-              </div>            
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+            {[
+              { duration: "1 Month", price: "1500", color: "bg-purple-600", text: "text-white" },
+              { duration: "3 Months", price: "3500", color: "bg-red-600", text: "text-white" },
+              { duration: "6 Months", price: "5000", color: "bg-green-600", text: "text-white" },
+              { duration: "12 Months", price: "9000", color: "bg-yellow-500", text: "text-zinc-950" },
+              { duration: "12 Months (Couple)", price: "12000", color: "bg-pink-500", text: "text-white" },
+            ].map((plan, i) => (
+              <motion.div 
+                key={i}
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1 }}
+                className={`${plan.color} ${plan.text} p-8 rounded-3xl shadow-xl flex flex-col justify-between transform hover:-translate-y-2 transition-all duration-300 relative group overflow-hidden`}
+              >
+                <div className="absolute -right-4 -top-4 w-24 h-24 bg-white/10 rounded-full blur-2xl group-hover:scale-150 transition-transform" />
+                <div>
+                  <p className="text-xs font-black uppercase tracking-[0.2em] mb-4 opacity-80">Membership Plan</p>
+                  <p className="text-2xl font-heading font-bold mb-1">{plan.duration}</p>
+                  <div className="flex items-baseline gap-1 mb-8">
+                    <span className="text-4xl font-heading font-black">₹{plan.price}</span>
+                  </div>
+                </div>
+                <Link 
+                  to="/contact"
+                  className="w-full bg-zinc-950 text-white py-3 rounded-xl font-bold text-sm text-center hover:bg-zinc-800 transition-colors uppercase tracking-widest"
+                >
+                  Join Now
+                </Link>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>
@@ -157,33 +165,34 @@ export default function Home() {
           <div className="flex justify-between items-end mb-12">
             <div>
               <h2 className="text-3xl md:text-5xl font-heading font-bold text-zinc-900 dark:text-white mb-4">
-                Premium <span className="text-red-600">Facilities</span>
+                Premium <span className="text-gradient">Facilities</span>
               </h2>
               <p className="text-zinc-600 dark:text-zinc-400 max-w-xl">
                 Equipped with the best machines for your transformation.
               </p>
             </div>
-            <Link to="/services" className="hidden md:flex items-center gap-2 text-yellow-500 hover:text-yellow-400 font-medium">
+            <Link to="/services" className="hidden md:flex items-center gap-2 text-red-600 hover:text-red-500 font-bold uppercase tracking-widest text-xs">
               View All <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
               { title: "Strength Zone", img: "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?q=80&w=2070&auto=format&fit=crop" },
               { title: "Cardio Area", img: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=2070&auto=format&fit=crop" },
               { title: "Women's Workout Zone", img: "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?q=80&w=2070&auto=format&fit=crop" }
             ].map((facility, i) => (
-              <div key={i} className="group relative h-80 rounded-2xl overflow-hidden">
+              <div key={i} className="group relative h-96 rounded-3xl overflow-hidden shadow-xl">
                 <img 
                   src={facility.img} 
                   alt={facility.title} 
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                   referrerPolicy="no-referrer"
                 />
-                <div className="absolute inset-0 bg-linear-to-t from-zinc-950 via-zinc-950/40 to-transparent" />
-                <div className="absolute bottom-6 left-6">
-                  <h3 className="text-2xl font-heading font-bold text-white">{facility.title}</h3>
+                <div className="absolute inset-0 bg-linear-to-t from-zinc-950 via-zinc-950/20 to-transparent" />
+                <div className="absolute bottom-0 left-0 right-0 p-8">
+                  <div className="w-8 h-1 bg-yellow-500 mb-4 rounded-full" />
+                  <h3 className="text-3xl font-heading font-bold text-white uppercase tracking-tighter">{facility.title}</h3>
                 </div>
               </div>
             ))}
@@ -199,30 +208,31 @@ export default function Home() {
       {/* Testimonials & Transformations */}
       <section className="py-10 bg-zinc-100 dark:bg-zinc-950">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl md:text-5xl font-heading font-bold text-center text-zinc-900 dark:text-white mb-16">
-            Real People. <span className="text-yellow-500">Real Results.</span>
+          <h2 className="text-3xl md:text-5xl font-heading font-bold text-center text-zinc-900 dark:text-white mb-16 uppercase tracking-tighter">
+            Real People. <span className="text-gradient">Real Results.</span>
           </h2>
           
           {/* Transformations Section */}
           <div className="mb-16">
             <h3 className="text-2xl font-heading font-bold text-zinc-900 dark:text-white mb-8">Success Stories</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {[
                 { img: Transformations, name: "90 Day Transformation", desc: "Lost 25kg & Gained Muscle" },
                 { img: Transform2, name: "60 Day Transformation", desc: "Built 5kg Pure Muscle" },
                 { img: Transform3, name: "120 Day Transformation", desc: "Lost 30kg & Total Body Recomposition" },
               ].map((transformation, i) => (
-                <div key={i} className="relative h-100 w-95 rounded-2xl overflow-hidden border-4 border-yellow-500">
+                <div key={i} className="group relative h-[450px] rounded-3xl overflow-hidden shadow-2xl">
                   <img 
                     src={transformation.img}
                     alt={transformation.name} 
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                     referrerPolicy="no-referrer"
                   />
-                  <div className="absolute inset-0 bg-linear-to-t from-zinc-950 to-transparent opacity-80" />
-                  <div className="absolute bottom-8 left-0 right-0 text-center">
+                  <div className="absolute inset-0 bg-linear-to-t from-zinc-950 via-zinc-950/20 to-transparent opacity-90" />
+                  <div className="absolute bottom-0 left-0 right-0 p-8 transform translate-y-2 group-hover:translate-y-0 transition-transform">
+                    <div className="w-12 h-1 bg-red-600 mb-4 rounded-full" />
                     <h3 className="text-2xl font-heading font-bold text-white mb-2">{transformation.name}</h3>
-                    <p className="text-yellow-400 font-medium text-sm">{transformation.desc}</p>
+                    <p className="text-red-500 font-bold text-sm uppercase tracking-widest">{transformation.desc}</p>
                   </div>
                 </div>
               ))}
@@ -257,9 +267,12 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             <div className="space-y-8">
-              <div>
+              <div className="relative">
+                <span className="absolute -top-12 -left-8 text-7xl font-heading font-black text-outline opacity-10 uppercase tracking-tighter select-none pointer-events-none">
+                  LOCATION
+                </span>
                 <h2 className="text-3xl md:text-5xl font-heading font-bold text-zinc-900 dark:text-white mb-4">
-                  Find <span className="text-red-600">Us</span>
+                  Find <span className="text-gradient">Us</span>
                 </h2>
                 <p className="text-zinc-600 dark:text-zinc-400">Visit us today and take the first step towards your fitness goals.</p>
               </div>
@@ -310,27 +323,31 @@ export default function Home() {
       </section>
 
       {/* CTA Banner */}
-      <section className="py-24 relative overflow-hidden bg-red-600">
-        <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]" />
+      <section className="py-24 relative overflow-hidden bg-zinc-950">
+        <div className="absolute inset-0 bg-red-600 opacity-90" />
+        <div className="absolute inset-0 bg-grid opacity-20" />
+        <div className="absolute -top-24 -right-24 w-96 h-96 bg-white/10 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-black/20 rounded-full blur-3xl" />
+        
         <div className="relative z-10 max-w-4xl mx-auto px-4 text-center">
-          <h2 className="text-4xl md:text-6xl font-heading font-bold text-white mb-6 uppercase tracking-tight">
-            Ready to Transform?
+          <h2 className="text-4xl md:text-7xl font-heading font-bold text-white mb-6 uppercase tracking-tighter">
+            Ready to <span className="text-zinc-950">Transform?</span>
           </h2>
-          <p className="text-xl text-red-100 mb-10">
+          <p className="text-xl md:text-2xl text-red-50 font-medium mb-12">
             Join Fitness City today and start building the best version of yourself.
           </p>
-          <div className="flex flex-col sm:flex-row justify-center gap-4">
+          <div className="flex flex-col sm:flex-row justify-center gap-6">
             <Link 
-              to="/contact"
-              className="bg-zinc-950 hover:bg-black text-white px-8 py-4 rounded-full font-bold text-lg transition-colors flex items-center justify-center gap-2"
+              to={user ? "/profile" : "/contact"}
+              className="bg-zinc-950 hover:bg-black text-white px-10 py-5 rounded-2xl font-bold text-lg transition-all hover:scale-105 shadow-xl flex items-center justify-center gap-2 min-w-[220px]"
             >
-              Join Now
+              {user ? "View My Progress" : "Join Now"}
             </Link>
             <a 
               href="https://wa.me/919964290488" 
               target="_blank" 
               rel="noreferrer"
-              className="bg-white text-red-600 hover:bg-zinc-100 px-8 py-4 rounded-full font-bold text-lg transition-colors flex items-center justify-center gap-2"
+              className="bg-white text-red-600 hover:bg-zinc-100 px-10 py-5 rounded-2xl font-bold text-lg transition-all hover:scale-105 shadow-xl flex items-center justify-center gap-2 min-w-[220px]"
             >
               Call / WhatsApp
             </a>

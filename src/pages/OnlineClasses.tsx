@@ -33,13 +33,18 @@ export default function OnlineClasses() {
     <div className="w-full pt-8 pb-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="text-center mb-16">
+        <div className="text-center mb-16 relative">
+          <div className="absolute inset-0 flex items-center justify-center -z-10">
+            <span className="text-8xl md:text-9xl font-heading font-black text-outline opacity-10 uppercase tracking-tighter select-none pointer-events-none">
+              REMOTE
+            </span>
+          </div>
           <motion.h1 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="text-4xl md:text-6xl font-heading font-bold text-zinc-900 dark:text-white uppercase tracking-tight mb-4"
           >
-            Online <span className="text-red-600">Classes</span>
+            Online <span className="text-gradient">Classes</span>
           </motion.h1>
           <motion.div 
             initial={{ opacity: 0, scale: 0.8 }}

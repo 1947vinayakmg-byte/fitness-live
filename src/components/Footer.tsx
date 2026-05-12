@@ -12,7 +12,7 @@ export default function Footer() {
             <div className="flex items-center gap-2">
               <div className="w-11 h-11 rounded-full overflow-hidden border border-zinc-200 dark:border-zinc-800 shadow-sm flex items-center justify-center bg-white">
                   <img 
-                  src={logoImg} alt="Gym Logo" className="h-8 w-auto object-contain" 
+                  src={logoImg} alt="Gym Logo" className="w-full h-full object-cover rounded-full" 
 />
               </div>
               <h3 className="font-heading font-bold text-2xl text-zinc-900 dark:text-white">

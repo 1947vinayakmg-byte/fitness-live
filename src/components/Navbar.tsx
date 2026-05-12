@@ -4,10 +4,15 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../lib/utils';
 import logoImg from '../assets/logo.png';
+import { auth } from '../firebase';
+import { onAuthStateChanged, User } from 'firebase/auth';
+import { useEffect } from 'react';
 
-export default function Navbar({ darkMode, setDarkMode }: { darkMode: boolean, setDarkMode: (v: boolean) => void }) {
+export default function Navbar({ darkMode, setDarkMode, user }: { darkMode: boolean, setDarkMode: (v: boolean) => void, user: any }) {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+
+  // Remove internal user state and useEffect since user is now a prop
 
   const links = [
     { name: 'Home', path: '/' },
@@ -22,14 +27,14 @@ export default function Navbar({ darkMode, setDarkMode }: { darkMode: boolean, s
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16 items-center">
           <Link to="/" className="flex items-center gap-2">
-            <div className="w-11 h-11 square-full overflow-hidden border border-zinc-200 dark:border-zinc-800 shadow-sm flex items-center justify-center bg-black">
+            <div className="w-11 h-11 rounded-full overflow-hidden border border-zinc-200 dark:border-zinc-800 shadow-sm flex items-center justify-center bg-black">
               <img 
                src={logoImg} 
                alt="Gym Logo" 
-               className="w-auto object-contain"/>
+               className="w-full h-full object-cover rounded-full"/>
             </div>
-            <span className="font-heading font-bold text-2xl tracking-tight text-zinc-900 dark:text-white">
-              FITNESS <span className="text-yellow-500">CITY</span>
+            <span className="font-heading font-bold text-2xl tracking-tighter text-zinc-900 dark:text-white uppercase">
+              FITNESS <span className="text-gradient">CITY</span>
             </span>
           </Link>
 
@@ -56,12 +61,33 @@ export default function Navbar({ darkMode, setDarkMode }: { darkMode: boolean, s
             >
               {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
             </button>
-            <Link 
-              to="/contact"
-              className="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-full font-medium transition-colors shadow-[0_0_15px_rgba(220,38,38,0.5)]"
-            >
-              Join Now
-            </Link>
+
+            {user ? (
+              <Link 
+                to="/profile"
+                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all border border-zinc-200 dark:border-zinc-700"
+              >
+                <div className="w-8 h-8 rounded-lg bg-yellow-500 flex items-center justify-center text-black font-bold">
+                  {user.displayName?.[0] || user.email?.[0] || 'U'}
+                </div>
+                <span className="text-sm font-medium text-zinc-900 dark:text-white hidden lg:block">Profile</span>
+              </Link>
+            ) : (
+              <div className="flex items-center gap-3">
+                <Link 
+                  to="/login"
+                  className="hidden sm:block text-sm font-medium text-zinc-600 dark:text-zinc-300 hover:text-yellow-500 transition-colors px-4 py-2 rounded-full border border-zinc-200 dark:border-zinc-800 hover:border-yellow-500"
+                >
+                  Login / Signup
+                </Link>
+                <Link 
+                  to="/contact"
+                  className="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-full text-sm font-medium transition-colors shadow-[0_0_15px_rgba(220,38,38,0.5)]"
+                >
+                  Join Now
+                </Link>
+              </div>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -107,13 +133,32 @@ export default function Navbar({ darkMode, setDarkMode }: { darkMode: boolean, s
                   {link.name}
                 </Link>
               ))}
-              <Link 
-                to="/contact"
-                onClick={() => setIsOpen(false)}
-                className="block w-full text-center mt-4 bg-red-600 hover:bg-red-700 text-white px-5 py-3 rounded-md font-medium"
-              >
-                Join Now
-              </Link>
+              {user ? (
+                <Link
+                  to="/profile"
+                  onClick={() => setIsOpen(false)}
+                  className="block px-3 py-3 rounded-md text-base font-medium text-yellow-500 bg-zinc-100 dark:bg-zinc-800"
+                >
+                  Your Profile
+                </Link>
+              ) : (
+                <>
+                  <Link
+                    to="/login"
+                    onClick={() => setIsOpen(false)}
+                    className="block px-3 py-3 rounded-md text-base font-medium text-zinc-600 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800"
+                  >
+                    Log In
+                  </Link>
+                  <Link 
+                    to="/contact"
+                    onClick={() => setIsOpen(false)}
+                    className="block w-full text-center mt-4 bg-red-600 hover:bg-red-700 text-white px-5 py-3 rounded-md font-medium"
+                  >
+                    Join Now
+                  </Link>
+                </>
+              )}
             </div>
           </motion.div>
         )}

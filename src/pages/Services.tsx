@@ -44,19 +44,24 @@ export default function Services() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Header */}
-        <div className="text-center mb-16">
+        <div className="text-center mb-16 relative">
+          <div className="absolute inset-0 flex items-center justify-center -z-10">
+            <span className="text-8xl md:text-9xl font-heading font-black text-outline opacity-10 uppercase tracking-tighter select-none pointer-events-none">
+              ELITE
+            </span>
+          </div>
           <motion.h1 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="text-4xl md:text-6xl font-heading font-bold text-zinc-900 dark:text-white uppercase tracking-tight mb-4"
           >
-            Why Choose <span className="text-red-600">Us</span>
+            Why Choose <span className="text-gradient">Us</span>
           </motion.h1>
           <motion.div 
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.2 }}
-            className="w-24 h-1 bg-yellow-500 mx-auto"
+            className="w-24 h-1 bg-red-600 mx-auto"
           />
         </div>
 
