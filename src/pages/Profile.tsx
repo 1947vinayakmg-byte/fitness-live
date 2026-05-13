@@ -36,7 +36,7 @@ export default function Profile({ setUser }: { setUser: (user: any) => void }) {
         setLocalUser(parsedUser);
         
         try {
-          const response = await fetch(`http://localhost:8000/api/users/get-user/${parsedUser.email}`);
+          const response = await fetch(`/_/backend/api/users/get-user/${parsedUser.email}`);
           const data = await response.json();
           if (data.success) {
             setUserData(data.user);
@@ -78,7 +78,7 @@ export default function Profile({ setUser }: { setUser: (user: any) => void }) {
     if (!user) return;
     setSaving(true);
     try {
-      const response = await fetch("http://localhost:8000/api/users/update-profile", {
+      const response = await fetch("/_/backend/api/users/update-profile", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

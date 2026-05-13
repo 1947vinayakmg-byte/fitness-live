@@ -24,7 +24,7 @@ export default function Signup({ setUser }: { setUser: (user: any) => void }) {
     setLoading(true);
 
     try {
-      const response = await fetch("http://localhost:8000/api/users/signup", {
+      const response = await fetch("/_/backend/api/users/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

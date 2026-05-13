@@ -16,7 +16,7 @@ export default function ForgotPassword() {
     setLoading(true);
 
     try {
-      const response = await fetch(`http://localhost:8000/api/users/get-user/${email}`);
+      const response = await fetch(`/_/backend/api/users/get-user/${email}`);
       const data = await response.json();
       
       if (data.success) {
@@ -37,7 +37,7 @@ export default function ForgotPassword() {
     setLoading(true);
 
     try {
-      const response = await fetch("http://localhost:8000/api/users/reset-password", {
+      const response = await fetch("/_/backend/api/users/reset-password", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

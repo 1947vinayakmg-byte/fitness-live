@@ -31,7 +31,7 @@ export default function Login({ setUser }: { setUser: (user: any) => void }) {
 
   try {
 
-    const response = await fetch("http://localhost:8000/api/users/login", {
+    const response = await fetch("/_/backend/api/users/login", {
 
       method: "POST",
 
@@ -75,7 +75,7 @@ export default function Login({ setUser }: { setUser: (user: any) => void }) {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
 
-      const response = await fetch("http://localhost:8000/api/users/save-user", {
+      const response = await fetch("/_/backend/api/users/save-user", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
